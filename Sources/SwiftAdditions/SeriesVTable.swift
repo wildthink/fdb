@@ -70,8 +70,13 @@ final class SeriesModule: VirtualTableModule {
             let constraint = constraints[i]
             guard constraint.usable != 0 else { continue }
             guard let cndx = Column(rawValue: constraint.iColumn) else { return .constraint }
-            guard cndx.is_hidden else { continue }
-            guard constraint.op == SQLITE_INDEX_CONSTRAINT_EQ else { return .constraint }
+//            guard cndx.is_hidden else { continue }
+//            guard constraint.op == SQLITE_INDEX_CONSTRAINT_EQ else { return .constraint }
+            // Hidden arguments are expected tp be EQ ONLY
+            if constraint.op != SQLITE_INDEX_CONSTRAINT_EQ &&
+               cndx.is_hidden {
+                return .constraint
+            }
 
             let farg = FilterArg(arg_ndx: argc - 1, col_ndx: cndx, op: constraint.op)
             filter_info.argv.append(farg)
@@ -150,14 +155,38 @@ extension SeriesModule {
             Swift.print (#function, arguments)
 
             for farg in module.filter_info.argv {
-                //                Swift.print(farg)
-                switch (farg.col_ndx, arguments[Int(farg.arg_ndx)]) {
-                    case (.start, let DatabaseValue.integer(argv)): _min  = argv
-                    case (.stop,  let DatabaseValue.integer(argv)): _max  = argv
-                    case (.step,  let DatabaseValue.integer(argv)): _step = argv
+                let dbv = arguments[Int(farg.arg_ndx)]
+                guard case let .integer(ival) = dbv else { continue }
+                
+                switch (farg.col_ndx, farg.op) {
+                    case (.start, 2): _min  = ival
+                    case (.stop, 2): _max  = ival
+                    case (.step, 2): _step = ival
+                    
+                    case (.value, 2):
+                        // EQ
+                        _min = ival
+                        _max = ival
+
+                    case (.value, 8), (.value, 16):
+                        // LT, LE
+                        _max = ival
+
+                    case (.value, 4), (.value, 32):
+                        // GT, GE
+                        _min = ival
+
                     default:
                         break
                 }
+
+//                switch (farg.col_ndx, arguments[Int(farg.arg_ndx)]) {
+//                    case (.start, let DatabaseValue.integer(argv)): _min  = argv
+//                    case (.stop,  let DatabaseValue.integer(argv)): _max  = argv
+//                    case (.step,  let DatabaseValue.integer(argv)): _step = argv
+//                    default:
+//                        break
+//                }
             }
             
             if arguments.contains(where: { return $0 == .null ? true : false }) {
@@ -184,8 +213,42 @@ extension SeriesModule {
  unsigned char usable;     /* True if this constraint is usable */
  int iTermOffset;
  */
+
 extension sqlite3_index_constraint: CustomStringConvertible {
+    
+    var isUpperBound: Bool {
+        // If its EQ or LESS
+        [2, 8, 16].contains(op)
+    }
+
+    var isLowerBound: Bool {
+        // If its EQ or GREATER
+        [2, 4, 32].contains(op)
+    }
+
     public var description: String {
-        "(sql_constraint col:\(iColumn) op:\(op) usable:\(usable) offset:\(iTermOffset))"
+        
+        let opcode: [Int: String] = [
+            2: "EQ"         ,
+            4: "GT"         ,
+            8: "LE"         ,
+            16: "LT"        ,
+            32: "GE"        ,
+            64: "MATCH"     ,
+            65: "LIKE"      ,
+            66: "GLOB"      ,
+            67: "REGEXP"    ,
+            68: "NE"        ,
+            69: "ISNOT"     ,
+            70: "ISNOTNULL" ,
+            71: "ISNULL"    ,
+            72: "IS"        ,
+            150: "FUNCTION"
+        ];
+        let op_name = opcode[Int(op)] ?? "<op>"
+        return
+            "(sql_constraint col:\(iColumn) op:\(op_name) usable:\(usable) offset:\(iTermOffset))"
     }
 }
+
+

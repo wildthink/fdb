@@ -17399,6 +17399,13 @@ static int do_meta_command(char *zLine, ShellState *p){
   }else
 #endif
 
+#ifdef FEISTY_DB_EXTENSION
+      if( c=='f' && strncmp(azArg[0], "fn", n)==0 ){
+          extern void feisty_shell_cmd(char **, int);
+          feisty_shell_cmd(azArg, nArg);
+      }else
+#endif
+
   if( c=='f' && strncmp(azArg[0], "filectrl", n)==0 ){
     static const struct {
        const char *zCtrlName;   /* Name of a test-control option */

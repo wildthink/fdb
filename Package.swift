@@ -46,8 +46,15 @@ let package = Package(
 				.define("SQLITE_ENABLE_STAT4", to: "1"),
 				.define("SQLITE_ENABLE_SNAPSHOT", to: "1"),
 				.define("SQLITE_ENABLE_JSON1", to: "1"),
+                
 				.define("SQLITE_EXTRA_INIT", to: "feisty_db_init"),
-		]),
+                .define("HAVE_READLINE", to: "1"),
+            ],
+            linkerSettings: [
+                .linkedLibrary("readline"),
+                .linkedLibrary("ncurses"),
+            ]
+        ),
         .target(
             name: "SwiftAdditions",
             dependencies: [

@@ -9,6 +9,8 @@ import Foundation
 import FeistyDB
 import FeistyExtensions
 
+// Provide a place to retain the FeistyDB
+var g_db: Database?
 
 @_cdecl("feisty_init")
 func fiesty_init(_ db: SQLiteDatabaseConnection) {
@@ -40,6 +42,11 @@ func fiesty_init(_ db: SQLiteDatabaseConnection) {
     g_db = db
 }
 
-// extern feisty_init(sqlite* db);
-var g_db: Database?
+@_cdecl("feisty_shell_cmd")
+func feisty_shell_cmd(_ argv: UnsafePointer<UnsafePointer<Int8>?>?, _ argc: Int) {
+    let args = UnsafeBufferPointer(start: argv, count: Int(argc))
+    let arguments = args.map { String(utf8String: $0.unsafelyUnwrapped).unsafelyUnwrapped }
+
+    Swift.print (#function, argc, arguments)
+}
 
