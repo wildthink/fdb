@@ -25,6 +25,6 @@ split -p 'sqlite3_fileio_init.*p->db' shell.c part_
 cat  part_aa ../fiesty_patch.txt part_ab > shell.c
 rm part_*
 cp shell.c ../Sources/feisty/main.c
-cp sqlite3*.h ../Sources/feisty/
+cp sqlite3*.h ../Sources/fdb/
 
 

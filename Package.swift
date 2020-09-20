@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "feisty",
+    name: "fdb",
     platforms: [
         .macOS(.v10_15),    //.v10_10 - .v10_15
     ],
     products: [
-         .executable(name: "feisty", targets: ["feisty"])
+         .executable(name: "fdb", targets: ["fdb"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -19,7 +19,7 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "feisty",
+            name: "fdb",
             dependencies: [
                 "FeistyDB",
                 .target(name: "SwiftAdditions"),
@@ -55,7 +55,7 @@ let package = Package(
                 .product(name: "FeistyExtensions", package: "FeistyDB"),
             ]),
         .testTarget(
-            name: "feistyTests",
-            dependencies: ["feisty"]),
+            name: "fdbTests",
+            dependencies: ["fdb"]),
     ]
 )
