@@ -236,6 +236,11 @@ static void setTextMode(FILE *file, int isOutput){
 #endif
 
 
+#ifdef FEISTY_DB_EXTENSION
+extern void feisty_init(void* db);
+extern int feisty_shell_cmd(char **, int);
+#endif
+
 /* True if the timer is enabled */
 static int enableTimer = 0;
 
@@ -14171,7 +14176,6 @@ static void open_db(ShellState *p, int openFlags){
     sqlite3_enable_load_extension(p->db, 1);
 #endif
 #ifdef FEISTY_DB_EXTENSION
-      extern void feisty_init(void* db);
       feisty_init(p->db);
 #endif
     sqlite3_fileio_init(p->db, 0, 0);
@@ -17399,13 +17403,6 @@ static int do_meta_command(char *zLine, ShellState *p){
   }else
 #endif
 
-#ifdef FEISTY_DB_EXTENSION
-      if( c=='f' && strncmp(azArg[0], "fn", n)==0 ){
-          extern void feisty_shell_cmd(char **, int);
-          feisty_shell_cmd(azArg, nArg);
-      }else
-#endif
-
   if( c=='f' && strncmp(azArg[0], "filectrl", n)==0 ){
     static const struct {
        const char *zCtrlName;   /* Name of a test-control option */
@@ -19833,7 +19830,10 @@ static int do_meta_command(char *zLine, ShellState *p){
       p->colWidth[j-1] = (int)integerValue(azArg[j]);
     }
   }else
-
+#ifdef FEISTY_DB_EXTENSION
+      if(feisty_shell_cmd(azArg, nArg)){
+    }else
+#endif
   {
     utf8_printf(stderr, "Error: unknown command or invalid arguments: "
       " \"%s\". Enter \".help\" for help\n", azArg[0]);

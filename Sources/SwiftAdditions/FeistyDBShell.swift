@@ -43,10 +43,11 @@ func fiesty_init(_ db: SQLiteDatabaseConnection) {
 }
 
 @_cdecl("feisty_shell_cmd")
-func feisty_shell_cmd(_ argv: UnsafePointer<UnsafePointer<Int8>?>?, _ argc: Int) {
+func feisty_shell_cmd(_ argv: UnsafePointer<UnsafePointer<Int8>?>?, _ argc: Int) -> Bool {
     let args = UnsafeBufferPointer(start: argv, count: Int(argc))
     let arguments = args.map { String(utf8String: $0.unsafelyUnwrapped).unsafelyUnwrapped }
 
     Swift.print (#function, argc, arguments)
+    return (arguments[0] == "fn")
 }
 
