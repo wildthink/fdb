@@ -8,13 +8,15 @@
 import Foundation
 import FeistyDB
 import FeistyExtensions
+import ArgumentParser
 
 // Provide a place to retain the FeistyDB
-var g_db: Database?
+// FIXME: Add support for multiple/attached databases
+var global_db: Database?
 
 @_cdecl("feisty_init")
 func fiesty_init(_ db: SQLiteDatabaseConnection) {
-    Swift.print (#function)
+
     let db = Database(rawSQLiteDatabase: db)
     do {
         try db.addModule("calendar", type: CalendarModule.self)
@@ -39,15 +41,27 @@ func fiesty_init(_ db: SQLiteDatabaseConnection) {
     } catch {
         Swift.print (error)
     }
-    g_db = db
+    if global_db != nil {
+        Swift.print("WARNING: Overwriting Global Feisty Database Instance")
+    }
+    global_db = db
 }
 
 @_cdecl("feisty_shell_cmd")
 func feisty_shell_cmd(_ argv: UnsafePointer<UnsafePointer<Int8>?>?, _ argc: Int) -> Bool {
+    
     let args = UnsafeBufferPointer(start: argv, count: Int(argc))
     let arguments = args.map { String(utf8String: $0.unsafelyUnwrapped).unsafelyUnwrapped }
+    let options = Array(arguments.dropFirst())
 
-    Swift.print (#function, argc, arguments)
-    return (arguments[0] == "fn")
+    guard let pcmd = ShellCommands[arguments[0].lowercased()]
+    else { return false }
+    do {
+        var command = try pcmd.parseAsRoot(options)
+        try command.run()
+    } catch {
+        let help = pcmd.helpMessage()
+        Swift.print(help)
+    }
+    return true
 }
-
