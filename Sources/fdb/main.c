@@ -235,7 +235,6 @@ static void setTextMode(FILE *file, int isOutput){
 # define setTextMode(X,Y)
 #endif
 
-
 #ifdef FEISTY_DB_EXTENSION
 extern void feisty_init(void* db);
 extern int feisty_shell_cmd(char **, int);
@@ -19831,9 +19830,10 @@ static int do_meta_command(char *zLine, ShellState *p){
     }
   }else
 #ifdef FEISTY_DB_EXTENSION
-      if(feisty_shell_cmd(azArg, nArg)){
-    }else
+  if(feisty_shell_cmd(azArg, nArg)){
+  }else
 #endif
+
   {
     utf8_printf(stderr, "Error: unknown command or invalid arguments: "
       " \"%s\". Enter \".help\" for help\n", azArg[0]);

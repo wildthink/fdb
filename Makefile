@@ -23,29 +23,33 @@ patch: $(MAIN_C)
 $(MAIN_C): $(SQLITE_PKG)
 	$(MAKE) -f ../Makefile -C  $(SQLITE_PKG) main.c
 
+# This make rule is crafted to be executed w/in the sqlite pkg
 main.c:
 	cp shell.c main.c
-	cp shell.c main.c
 	# Patch 1
+	csplit -k main.c /"static int enableTimer = 0"/-2
+	cat xx00 > main.c
+	@echo "#ifdef FEISTY_DB_EXTENSION" >> main.c
+	@echo "extern void feisty_init(void* db);" >> main.c
+	@echo "extern int feisty_shell_cmd(char **, int);" >> main.c
+	@echo "#endif" >> main.c
+	cat xx01 >> main.c
+	# Patch 2
 	split -p 'sqlite3_fileio_init.*p->db' main.c part_
 	cat part_aa > main.c
 	@echo "#ifdef FEISTY_DB_EXTENSION" >> main.c
-	@echo "      extern void feisty_init(void* db);" >> main.c
 	@echo "      feisty_init(p->db);" >> main.c
 	@echo "#endif" >> main.c
 	cat part_ab >> main.c
-	# Patch 2
-	split -p '"filectrl", n' main.c part_
-	cat part_aa > main.c
+	# Patch 3
+	csplit -k main.c /"Error: unknown command or invalid arguments: "/-2
+	cat xx00 > main.c
 	@echo "#ifdef FEISTY_DB_EXTENSION" >> main.c
-	@echo "	if( c=='f' && strncmp(azArg[0], \"fn\", n)==0 ){" >> main.c
-	@echo "		extern void feisty_shell_cmd(char **, int);" >> main.c
-	@echo "		feisty_shell_cmd(azArg, nArg);" >> main.c
-	@echo "	}else" >> main.c
+	@echo "  if(feisty_shell_cmd(azArg, nArg)){" >> main.c
+	@echo "  }else" >> main.c
 	@echo "#endif" >> main.c
-	@echo "" >> main.c
-	cat part_ab >> main.c
+	cat xx01 >> main.c
 	# Clean up
-	rm part_*
+	rm part_* xx*
 
 
