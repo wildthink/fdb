@@ -14,8 +14,8 @@ let ShellCommands: [String:ParsableCommand.Type] = [
     "repeat": Repeat.self
 ]
 
-////////////////////////////////
 struct Repeat: ParsableCommand {
+
     @Flag(help: "Include a counter with each repetition.")
     var includeCounter = false
     
