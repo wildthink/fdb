@@ -1,6 +1,8 @@
 # fdb
 
-FDB links the SQLite command line `shell.c` with the Swift FeistyDB SQLite framework making it easy to extend the SQLite functions and virtual tables using Swift.
+Have you ever wanted your own easily customized SQLite command line tool using Swift? Well, with FeistyDB and a little bit glue, now you can!
+
+FDB links the SQLite command line `shell.c` with the Swift FeistyDB SQLite framework making it easy to extend the SQLite functions and virtual tables using Swift. If you're curious about why you might be interested in SQLite for your applications see the Backstory.
 
 As part of the integration the Swift Argument Parser is included and hooked into the command line dot-commands to process any commands not recognized by the standard SQLite suite.
 
@@ -50,7 +52,7 @@ func feisty_shell_cmd(_ argv: UnsafePointer<UnsafePointer<Int8>?>?, _ argc: Int)
 }
 ```
 
-Add your own Commands to the project remembering to them to the `ShellCommands` dictionary in `ShellCommands.swift` .
+Add your own Commands to the project remembering to add them to the `ShellCommands` dictionary in `ShellCommands.swift` .
 
 ```swift
 let ShellCommands: [String:ParsableCommand.Type] = [
@@ -82,6 +84,10 @@ ArgumentParser is the "new open-source library that makes it straightforward —
 - https://www.avanderlee.com/swift/command-line-tool-package-manager/
 
 
+
+### Backstory
+
+Coming Soon.
 
 ### About FeistyDB
 
