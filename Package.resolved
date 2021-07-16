@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/wildthink/FeistyDB",
         "state": {
           "branch": "master",
-          "revision": "1fcebcacc7c32857a8aa832f814f80b4a7990141",
+          "revision": "d88160a590dd56e39caf382f7e15f18ae6298f2e",
           "version": null
         }
       },
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
-          "version": "0.3.1"
+          "revision": "986d191f94cec88f6350056da59c2e59e83d1229",
+          "version": "0.4.3"
         }
       }
     ]

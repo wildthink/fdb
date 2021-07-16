@@ -1,4 +1,4 @@
-SQLITE_VERS=3330000
+SQLITE_VERS=3360000
 SQLITE_PKG=sqlite-amalgamation-$(SQLITE_VERS)
 SQLITE_ZIP=$(SQLITE_PKG).zip
 MAIN_C=$(SQLITE_PKG)/main.c
@@ -16,7 +16,7 @@ $(SQLITE_PKG): $(SQLITE_ZIP)
 	$(UNZIP)  $(SQLITE_ZIP)
 
 $(SQLITE_ZIP):
-	curl -O https://sqlite.org/2020/$(SQLITE_ZIP)
+	curl -O https://sqlite.org/2021/$(SQLITE_ZIP)
 	
 patch: $(MAIN_C)
 
